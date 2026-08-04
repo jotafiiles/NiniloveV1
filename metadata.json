@@ -1,0 +1,8 @@
+{
+  "name": "Remix NiniLove",
+  "description": "Una aplicación premium, exclusiva y romántica diseñada para la pareja Nini y Jota. Comparte cartas interactivas, películas, calendarios de recuerdos y frases diarias.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
