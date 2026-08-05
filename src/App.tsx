@@ -11,6 +11,7 @@ import LettersView from "./components/LettersView";
 import MoviesView from "./components/MoviesView";
 import ProfileView from "./components/ProfileView";
 import WelcomeScreen from "./components/WelcomeScreen";
+import ContractView from "./components/ContractView";
 
 import * as usersApi from "./api/users";
 import * as settingsApi from "./api/settings";
@@ -19,6 +20,7 @@ import * as lettersApi from "./api/letters";
 import * as moviesApi from "./api/movies";
 import * as loveCounterApi from "./api/loveCounter";
 import * as activitiesApi from "./api/activities";
+import * as marriageContractApi from "./api/marriageContract";
 
 const ROMANTIC_PHRASES = [
   "Eres mi lugar favorito en el mundo entero.",
@@ -72,10 +74,22 @@ const DEFAULT_STATE: DBState = {
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>("inicio");
   const [currentUser, setCurrentUser] = useState<string | null>(() => {
+    const isConfigured = localStorage.getItem("configured") === "true";
+    const selected = localStorage.getItem("selectedUser");
+    if (isConfigured && (selected === "Nini" || selected === "Jota")) {
+      return selected;
+    }
     const saved = localStorage.getItem("currentUserId");
-    if (saved === "nini_001" || saved === "jota_001") return saved;
-    if (saved === "Nini") return "nini_001";
-    if (saved === "Jota") return "jota_001";
+    if (saved === "nini_001" || saved === "Nini") {
+      localStorage.setItem("selectedUser", "Nini");
+      localStorage.setItem("configured", "true");
+      return "Nini";
+    }
+    if (saved === "jota_001" || saved === "Jota") {
+      localStorage.setItem("selectedUser", "Jota");
+      localStorage.setItem("configured", "true");
+      return "Jota";
+    }
     return null;
   });
   const [db, setDb] = useState<DBState | null>(null);
@@ -231,6 +245,7 @@ export default function App() {
         calendar: false,
         profiles: false,
         daysTogether: false,
+        marriageContract: false,
       };
 
       const checkAllLoaded = () => {
@@ -335,6 +350,18 @@ export default function App() {
           checkAllLoaded();
         })
       );
+
+      // 8. Subscribe to Marriage Contract
+      unsubscribes.push(
+        marriageContractApi.subscribeContract((data) => {
+          setDb((prev) => ({
+            ...prev || DEFAULT_STATE,
+            marriageContract: data
+          }));
+          loadedFlags.marriageContract = true;
+          checkAllLoaded();
+        })
+      );
     };
 
     setup();
@@ -395,6 +422,22 @@ export default function App() {
       });
     } catch (error) {
       console.error("Error saving calendar memory:", error);
+    }
+  };
+
+  // API Call: Delete calendar memory (direct to Firebase)
+  const handleDeleteCalendarEvent = async (date: string) => {
+    try {
+      await calendarApi.delete(date);
+      const name = currentUser === "nini_001" || currentUser === "Nini" ? "Nini" : "Jota";
+      await activitiesApi.create({
+        who: name,
+        userId: currentUser,
+        timestamp: new Date().toISOString(),
+        message: `${name} eliminó el recuerdo del calendario de la fecha: ${date}`
+      });
+    } catch (error) {
+      console.error("Error deleting calendar memory:", error);
     }
   };
 
@@ -493,6 +536,15 @@ export default function App() {
     }
   };
 
+  // API Call: Update marriage contract (direct to Firebase)
+  const handleUpdateContract = async (contractState: any) => {
+    try {
+      await marriageContractApi.updateContract(contractState);
+    } catch (error) {
+      console.error("Error updating marriage contract:", error);
+    }
+  };
+
   // Transition parameters for seamless sliding transitions
   const tabTransition = {
     initial: { opacity: 0, x: 20 },
@@ -531,6 +583,7 @@ export default function App() {
             <CalendarView
               db={db}
               onAddCalendarEvent={handleAddCalendarEvent}
+              onDeleteCalendarEvent={handleDeleteCalendarEvent}
               currentUser={currentUser}
             />
           </motion.div>
@@ -566,6 +619,17 @@ export default function App() {
               db={db}
               onUpdateProfile={handleUpdateProfile}
               currentUser={currentUser}
+            />
+          </motion.div>
+        );
+      case "contrato":
+        return (
+          <motion.div key="contrato" {...tabTransition}>
+            <ContractView
+              db={db}
+              onNavigate={setActiveTab}
+              currentUser={currentUser}
+              onUpdateContract={handleUpdateContract}
             />
           </motion.div>
         );
@@ -610,8 +674,9 @@ export default function App() {
       <WelcomeScreen
         db={db}
         onConfirmUser={(userId) => {
-          const storedId = userId === "Nini" ? "nini_001" : "jota_001";
-          localStorage.setItem("currentUserId", storedId);
+          localStorage.setItem("selectedUser", userId);
+          localStorage.setItem("configured", "true");
+          localStorage.setItem("currentUserId", userId === "Nini" ? "nini_001" : "jota_001");
           setCurrentUser(userId);
         }}
       />

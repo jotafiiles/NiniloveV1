@@ -99,9 +99,9 @@ export default function WelcomeScreen({ db, onConfirmUser }: WelcomeScreenProps)
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="text-lg font-bold text-[#4e4345] uppercase tracking-widest mb-6"
+          className="text-sm font-extrabold text-[#4e4345] uppercase tracking-widest mb-6 text-center px-4"
         >
-          ¿Quién eres?
+          ¿Quién utilizará este dispositivo?
         </motion.h2>
 
         <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
@@ -126,12 +126,12 @@ export default function WelcomeScreen({ db, onConfirmUser }: WelcomeScreenProps)
                 className="w-12 h-12 rounded-full object-cover ring-2 ring-white/80 shadow-md"
                 referrerPolicy="no-referrer"
               />
-              <span className="text-xl">{profilesData.Nini.emoji}</span>
+              <span className="text-xl">❤️</span>
             </div>
 
             <div className="relative z-10 mt-6">
-              <h3 className="text-sm font-bold text-[#3A3234] uppercase tracking-wide">
-                {profilesData.Nini.name}
+              <h3 className="text-base font-black text-[#3A3234] uppercase tracking-wide flex items-center gap-1.5">
+                ❤️ {profilesData.Nini.name}
               </h3>
               <p className="text-[10px] text-gray-500 font-medium leading-relaxed mt-1 line-clamp-3 italic">
                 "{profilesData.Nini.bio}"
@@ -160,12 +160,12 @@ export default function WelcomeScreen({ db, onConfirmUser }: WelcomeScreenProps)
                 className="w-12 h-12 rounded-full object-cover ring-2 ring-white/80 shadow-md"
                 referrerPolicy="no-referrer"
               />
-              <span className="text-xl">{profilesData.Jota.emoji}</span>
+              <span className="text-xl">❤️</span>
             </div>
 
             <div className="relative z-10 mt-6">
-              <h3 className="text-sm font-bold text-[#3A3234] uppercase tracking-wide">
-                {profilesData.Jota.name}
+              <h3 className="text-base font-black text-[#3A3234] uppercase tracking-wide flex items-center gap-1.5">
+                ❤️ {profilesData.Jota.name}
               </h3>
               <p className="text-[10px] text-gray-500 font-medium leading-relaxed mt-1 line-clamp-3 italic">
                 "{profilesData.Jota.bio}"

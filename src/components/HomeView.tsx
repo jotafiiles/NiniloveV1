@@ -460,6 +460,50 @@ export default function HomeView({
         </div>
       </div>
 
+      {/* ❤️ Contrato de Amor Card */}
+      {(() => {
+        const partner1Signed = db?.marriageContract?.partner1?.status === "signed";
+        const partner2Signed = db?.marriageContract?.partner2?.status === "signed";
+        let contractStatusText = "Aún sin firmar";
+        if (partner1Signed && partner2Signed) {
+          contractStatusText = "Firmado para siempre ❤️";
+        } else if (partner1Signed || partner2Signed) {
+          contractStatusText = "Esperando la segunda firma";
+        }
+
+        return (
+          <motion.div 
+            whileHover={{ y: -2 }}
+            onClick={() => onNavigate("contrato")}
+            className="relative overflow-hidden bg-gradient-to-tr from-[#FFFDF9] to-[#FFF9F2] rounded-[32px] p-6 border border-amber-100/50 shadow-[0_12px_35px_-10px_rgba(180,120,40,0.15)] mb-6 cursor-pointer hover:border-amber-200 transition-all"
+            id="marriage-contract-home-card"
+          >
+            {/* Wax seal background icon */}
+            <div className="absolute right-4 bottom-4 text-amber-500/10 pointer-events-none translate-x-2 translate-y-2">
+              <Heart size={140} fill="currentColor" strokeWidth={1} />
+            </div>
+            
+            <div className="flex items-center gap-4 relative z-10">
+              <div className="bg-amber-100/60 p-4 rounded-[20px] text-amber-700">
+                <Heart size={24} fill="currentColor" className="animate-pulse" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-[10px] font-bold text-[#a16207] tracking-[0.2em] uppercase">❤️ Contrato de Amor</h3>
+                <p className="text-lg font-serif italic text-[#3A3234] mt-1 font-semibold leading-snug">
+                  {contractStatusText}
+                </p>
+                <p className="text-[10px] text-[#b45309] font-medium mt-1">
+                  {partner1Signed && partner2Signed 
+                    ? "¡Compromiso de amor inquebrantable!" 
+                    : "Haz clic para ver y firmar vuestro pacto sagrado"}
+                </p>
+              </div>
+              <ChevronRight size={18} className="text-[#d97706]/60 shrink-0" />
+            </div>
+          </motion.div>
+        );
+      })()}
+
       {/* Dynamic shortcuts for Calendar Anniversary, Letters, Movies */}
       <div className="grid grid-cols-2 gap-4 mb-6" id="shortcuts-grid">
         {/* Countdown */}
